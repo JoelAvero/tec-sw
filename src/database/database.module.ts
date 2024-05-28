@@ -1,21 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import config from 'src/config/config';
+import config from 'src/config';
 
 @Global()
 @Module({
   imports: [
-    // TypeOrmModule.forRoot({
-    //   type: 'postgres',
-    //   host: 'localhost',
-    //   port: 5432,
-    //   username: 'root',
-    //   password: 'root',
-    //   database: 'tecnica-sw',
-    //   entities: [],
-    //   synchronize: true,
-    // }),
     TypeOrmModule.forRootAsync({
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
