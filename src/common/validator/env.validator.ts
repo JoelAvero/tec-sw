@@ -4,8 +4,6 @@ import { IsEnum, IsNotEmpty, IsNumber, validateSync } from 'class-validator';
 enum Environment {
   Local = 'local',
   Development = 'dev',
-  Test = 'test',
-  Sandbox = 'sandbox',
   Production = 'prod',
 }
 
@@ -16,6 +14,8 @@ class EnvironmentVariables {
   @IsNumber()
   @IsNotEmpty()
   PORT: number;
+
+  //TODO: Validate the rest of the variables
 }
 
 export function validate(config: Record<string, unknown>) {
