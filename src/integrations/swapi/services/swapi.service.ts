@@ -34,7 +34,7 @@ export class SwapiService {
       openingCrawl: film.opening_crawl,
       director: film.director,
       producer: film.producer,
-      releaseDate: film.release_date,
+      releaseDate: new Date(film.release_date),
       url: `${this.configService.baseUrl}/${id}`,
     }));
   }
