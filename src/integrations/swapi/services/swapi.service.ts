@@ -5,12 +5,16 @@ import { SwapiMovie } from '../types/swapi-movie.type';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import config from 'src/config/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SwapiService {
   constructor(
     private httpService: HttpService,
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
+    @InjectRepository(Movie)
+    private movieRepository: Repository<Movie>,
   ) {}
 
   private async getMovies(): Promise<SwapiMovie[]> {
@@ -26,22 +30,33 @@ export class SwapiService {
   }
 
   private normalizeFilms(films: SwapiMovie[]): Partial<Movie>[] {
-    const id = uuidv4();
-    return films.map((film) => ({
-      id,
-      title: film.title,
-      episodeId: film.episode_id,
-      openingCrawl: film.opening_crawl,
-      director: film.director,
-      producer: film.producer,
-      releaseDate: new Date(film.release_date),
-      url: `${this.configService.baseUrl}/${id}`,
-    }));
+    return films.map((film) => {
+      const id = uuidv4();
+      return {
+        id,
+        title: film.title,
+        episodeId: film.episode_id,
+        openingCrawl: film.opening_crawl,
+        director: film.director,
+        producer: film.producer,
+        releaseDate: new Date(film.release_date),
+        url: `${this.configService.baseUrl}/${id}`,
+      };
+    });
   }
 
   async syncFilms() {
     const films = await this.getMovies();
     const normalizedFilms = this.normalizeFilms(films);
+
+    for (const film of normalizedFilms) {
+      const exists = await this.movieRepository.findOne({
+        where: { title: film.title },
+      });
+      if (!exists) {
+        await this.movieRepository.save(film);
+      }
+    }
 
     return normalizedFilms;
   }
