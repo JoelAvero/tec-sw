@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
-import { UserDetails } from './user-details.entity ';
+import { UserDetails } from './user-details.entity';
 
 enum UserRoles {
   ADMIN = 'admin',
@@ -9,10 +9,17 @@ enum UserRoles {
 @Entity()
 @Unique(['userDetails', 'role'])
 export class UserRole {
-  @ManyToOne(() => UserDetails, (user) => user.userRoles)
+  @ManyToOne(() => UserDetails, (user) => user.userRoles, {
+    primary: true,
+  })
   @JoinColumn()
   userDetails: UserDetails;
 
-  @Column({ type: 'enum', enum: UserRoles, default: UserRoles.REGULAR_USER })
+  @Column({
+    type: 'enum',
+    enum: UserRoles,
+    default: UserRoles.REGULAR_USER,
+    primary: true,
+  })
   role: string;
 }
