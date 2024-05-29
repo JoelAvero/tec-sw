@@ -4,6 +4,7 @@ export default registerAs('config', () => {
   return {
     port: parseInt(process.env.PORT, 10),
     stage: process.env.STAGE,
+    baseUrl: process.env.BASE_URL,
     postgres: {
       name: process.env.POSTGRES_DB,
       port: parseInt(process.env.POSTGRES_PORT, 10),
