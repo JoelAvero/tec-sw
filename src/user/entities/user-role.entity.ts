@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { UserDetails } from './user-details.entity';
 
-enum UserRoles {
+export enum UserRoles {
   ADMIN = 'admin',
   REGULAR_USER = 'regular_user',
 }
