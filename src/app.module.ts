@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './common/validator/env.validator';
-import { AppController } from './app.controller';
 import config from './config/config';
 import { environments } from './config/environments';
 import { DatabaseModule } from './database/database.module';
@@ -24,7 +23,5 @@ import { SwapiModule } from './integrations/swapi/swapi.module';
     MovieModule,
     SwapiModule,
   ],
-  controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}

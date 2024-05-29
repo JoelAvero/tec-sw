@@ -7,10 +7,11 @@ export enum UserRoles {
 }
 
 @Entity()
-@Unique(['userDetails', 'role'])
+@Unique(['user', 'role'])
 export class UserRole {
   @ManyToOne(() => User, (user) => user.userRoles, {
     primary: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   user: User;

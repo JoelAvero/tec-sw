@@ -7,6 +7,10 @@ export class UserAuth {
   @Column({ type: 'varchar' })
   password: string;
 
-  @OneToOne(() => User, (user) => user.userAuth)
+  @OneToOne(() => User, (user) => user.userAuth, {
+    primary: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
   user: User;
 }

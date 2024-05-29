@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { UserRole, UserRoles } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
 import { UserAuth } from '../entities/user-auth.entity';
+import { UserRoleDto } from '../dto/user-role.dto';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,7 @@ export class UserService {
     @InjectRepository(UserRole)
     private userRoleRepository: Repository<UserRole>,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     {
       const queryRunner =
         this.userRepository.manager.connection.createQueryRunner();
@@ -31,14 +32,12 @@ export class UserService {
         });
         const savedUserDetails = await queryRunner.manager.save(user);
 
-        // Crear User
         const userAuth = this.userAuthRepository.create({
           password: createUserDto.password,
           user: savedUserDetails,
         });
-        await queryRunner.manager.save(user);
+        await queryRunner.manager.save(userAuth);
 
-        // Crear UserRole
         const userRole = this.userRoleRepository.create({
           user: savedUserDetails,
           role: UserRoles.REGULAR_USER,
@@ -65,51 +64,46 @@ export class UserService {
     return this.userRepository.findOne(id);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    return this.userRepository.save({
+    return await this.userRepository.save({
       ...user,
       ...updateUserDto,
     });
   }
 
   async remove(id: string) {
-    const queryRunner =
-      this.userRepository.manager.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      // Buscar las entidades relacionadas
-      // const userDetails = await queryRunner.manager.findOne(UserDetails, id);
-      // if (!userDetails) {
-      //   throw new NotFoundException('User not found');
-      // }
-
-      // const userDetails = await queryRunner.manager.findOne(UserDetails, {
-      //   where: { id: userDetails.id },
-      // });
-      // const userRole = await queryRunner.manager.findOne(UserRole, {
-      //   where: { userDetailsId: userDetails.id },
-      // });
-
-      // // Eliminar las entidades
-      // await queryRunner.manager.remove(userRole);
-      // await queryRunner.manager.remove(userDetails);
-      // await queryRunner.manager.remove(user);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    await this.userRepository.remove(user);
+  }
+
+  async addRole(id: string, roleToAdd: UserRoleDto) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userRoleRepository.save({
+      user,
+      role: roleToAdd.role,
+    });
+  }
+
+  async removeRole(id: string, roleToRemove: UserRoleDto) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userRoleRepository.remove({
+      user,
+      role: roleToRemove.role,
+    });
   }
 }

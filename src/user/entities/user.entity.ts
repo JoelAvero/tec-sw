@@ -14,10 +14,13 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @OneToOne(() => UserAuth, (userAuth) => userAuth.user)
-  @JoinColumn()
+  @OneToOne(() => UserAuth, (userAuth) => userAuth.user, {
+    cascade: true,
+  })
   userAuth: UserAuth;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @OneToMany(() => UserRole, (userRole) => userRole.user, {
+    cascade: true,
+  })
   userRoles: UserRole[];
 }
