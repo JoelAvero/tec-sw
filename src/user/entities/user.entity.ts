@@ -1,13 +1,23 @@
 import { BaseEntity } from 'src/common/base/base.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { UserDetails } from './user-details.entity';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { UserRole } from './user-role.entity';
+import { UserAuth } from './user-auth.entity';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column({ type: 'varchar' })
-  password: string;
+  @Column({ type: 'varchar', length: 255 })
+  firstName: string;
 
-  @OneToOne(() => UserDetails, (userDetails) => userDetails.user)
+  @Column({ type: 'varchar', length: 255 })
+  lastName: string;
+
+  @Column({ type: 'varchar', length: 255, unique: true })
+  email: string;
+
+  @OneToOne(() => UserAuth, (userAuth) => userAuth.user)
   @JoinColumn()
-  userDetails: UserDetails;
+  userAuth: UserAuth;
+
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  userRoles: UserRole[];
 }
