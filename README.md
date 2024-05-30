@@ -14,7 +14,7 @@ Aqui hay un diagrama a grandes razgos de la aplicacion:
 ## Requisitos
 
 - node 18
-- postgres 13 (hay un docker-compose en el proyecto que se puede usar)
+- postgres 13 (hay un docker-compose en el proyecto que se puede usar con el comando **docker-compose up**)
 - variables de entorno (dejo un .env.example con los valores)
 
 ## Instalación
