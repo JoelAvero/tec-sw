@@ -131,4 +131,15 @@ export class UserService {
   async findUserAuth(user: User): Promise<UserAuth> {
     return await this.userAuthRepository.findOne({ where: { user } });
   }
+
+  async findOneWithRolesAndAuthByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['userRoles', 'userAuth'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
 }
