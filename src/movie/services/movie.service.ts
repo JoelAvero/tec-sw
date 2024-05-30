@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,21 +8,33 @@ import { CreateMovieDto, UpdateMovieDto } from '../dto/create-movie.dto';
 import { Movie } from '../entities/movie.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import config from 'src/config/config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class MovieService {
   constructor(
     @InjectRepository(Movie) private movieRepository: Repository<Movie>,
+    @Inject(config.KEY) private configService: ConfigType<typeof config>,
   ) {}
-  create(createMovieDto: CreateMovieDto): Promise<Movie> {
-    const movie = this.movieRepository.findOne({
+  async create(createMovieDto: CreateMovieDto): Promise<Movie> {
+    const movie = await this.movieRepository.findOne({
       where: { title: createMovieDto.title },
     });
 
     if (movie) {
       throw new BadRequestException('Movie already exists');
     }
-    return this.movieRepository.save(createMovieDto);
+
+    const id = uuidv4();
+
+    const newMovie = {
+      ...createMovieDto,
+      id,
+      url: `${this.configService.baseUrl}/movie/${id}`,
+    };
+    return this.movieRepository.save(newMovie);
   }
 
   findAll(): Promise<Movie[]> {

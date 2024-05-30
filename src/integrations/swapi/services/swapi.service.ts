@@ -1,15 +1,22 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Movie } from 'src/movie/entities/movie.entity';
 import { SwapiMovie } from '../types/swapi-movie.type';
 import { v4 as uuidv4 } from 'uuid';
-import { ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import config from 'src/config/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+const SWAPI_URL = 'https://swapi.dev/api/films/';
+
 @Injectable()
-export class SwapiService {
+export class SwapiService implements OnModuleInit {
   constructor(
     private httpService: HttpService,
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
@@ -17,15 +24,20 @@ export class SwapiService {
     private movieRepository: Repository<Movie>,
   ) {}
 
+  onModuleInit() {
+    this.syncFilms();
+  }
+
   private async getMovies(): Promise<SwapiMovie[]> {
     try {
       const { data } = await this.httpService.axiosRef.get<{
         results: SwapiMovie[];
-      }>('https://swapi.dev/api/films/');
+      }>(SWAPI_URL);
 
       return data.results;
     } catch (error) {
-      throw new Error('API error');
+      // TODO: send error to cloudwatch or something
+      throw new InternalServerErrorException('Something went wrong');
     }
   }
 
@@ -40,7 +52,7 @@ export class SwapiService {
         director: film.director,
         producer: film.producer,
         releaseDate: new Date(film.release_date),
-        url: `${this.configService.baseUrl}/${id}`,
+        url: `${this.configService.baseUrl}/movie/${id}`,
       };
     });
   }
