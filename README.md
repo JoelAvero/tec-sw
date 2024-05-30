@@ -50,14 +50,10 @@ $ yarn run start:prod
 
 Con la aplicacion corriendo, debe loguearse con alguno de los usuarios ("admin@admin.com", "regular@regular.com", contraseña: "root") enviando una solicitud post al endpoint:
 
-- /api/auth/login
+- **/api/auth/login**
 
 para luego hacer solicitudes a la api configurando el token jwt en las proximas consultas.
 
-Los endpoints disponibles son:
+Los endpoints disponibles los pueden ver en swagger:
 
-GET: /api/movie -> retorna todas las peliculas
-GET: /api/movie/:id -> retorna la pelicula por id (uuid)
-POST: /api/movie -> crea una pelicula
-PUT: /api/movie -> editar pelicula
-DELETE: /api/movie/:id -> elimina la pelicula por id
+- **/api/docs**

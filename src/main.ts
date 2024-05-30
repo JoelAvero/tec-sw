@@ -10,15 +10,14 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Tecnica Sw')
     .setDescription('Swapi based API documentation')
-    .setVersion('1.0.0')
     .build();
 
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix(globalPrefix);
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/api/docs', app, document);
+  SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
 
-  app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   const port = process.env.PORT;
