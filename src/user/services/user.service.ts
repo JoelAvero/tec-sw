@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserRole, UserRoles } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
 import { UserAuth } from '../entities/user-auth.entity';
 import { UserRoleDto } from '../dto/user-role.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -32,8 +33,10 @@ export class UserService {
         });
         const savedUserDetails = await queryRunner.manager.save(user);
 
+        const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
         const userAuth = this.userAuthRepository.create({
-          password: createUserDto.password,
+          password: hashedPassword,
           user: savedUserDetails,
         });
         await queryRunner.manager.save(userAuth);
@@ -105,5 +108,27 @@ export class UserService {
       user,
       role: roleToRemove.role,
     });
+  }
+
+  async findOneWithRoles(id: string): Promise<User> {
+    const user = await this.userRepository.findOne(id, {
+      relations: ['userRoles'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async findUserAuth(user: User): Promise<UserAuth> {
+    return await this.userAuthRepository.findOne({ where: { user } });
   }
 }

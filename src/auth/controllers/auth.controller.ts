@@ -1,13 +1,24 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
-import { signInDto } from '../dto/auth.dto';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { SignInDto } from '../dto/auth.dto';
+import { LocalGuard } from '../guards/local.guard';
+import { UserService } from 'src/user/services/user.service';
+import { JwtPayload } from 'src/interfaces/jwt-payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
-  @Post()
-  signIn(@Body() credentials: signInDto) {
-    return this.authService.signIn(credentials);
+  @UseGuards(LocalGuard)
+  @Post('/login')
+  async signIn(@Body() credentials: SignInDto) {
+    const { email, id } = await this.userService.findOneByEmail(
+      credentials.email,
+    );
+    const payload: JwtPayload = { email, id };
+    return this.jwtService.sign(payload);
   }
 }
