@@ -1,4 +1,4 @@
-## Description
+## Descripción
 
 La api toma informacion (de peliculas unicamente) de https://swapi.dev/ y las utiliza para popular su base de datos.
 Lo hace de dos maneras:
@@ -45,6 +45,10 @@ $ yarn run start:dev
 # production mode
 $ yarn run start:prod
 ```
+
+## Swagger
+
+- **/api/docs**
 
 ## Propuesta de prueba
 
