@@ -18,7 +18,6 @@ export class AuthService {
 
     const userAuth = await this.userService.findUserAuth(user);
 
-    //TODO: handle error
     const isPasswordValid = await bcrypt.compare(password, userAuth.password);
 
     if (!isPasswordValid) {
