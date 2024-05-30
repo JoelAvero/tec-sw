@@ -41,8 +41,13 @@ export class MovieService {
     return this.movieRepository.find();
   }
 
-  findOne(id: string): Promise<Movie> {
-    return this.movieRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<Movie> {
+    const movie = await this.movieRepository.findOne(id);
+
+    if (!movie) {
+      throw new NotFoundException("Movie doesn't exist");
+    }
+    return movie;
   }
 
   async update(id: string, updateMovieDto: UpdateMovieDto): Promise<Movie> {
