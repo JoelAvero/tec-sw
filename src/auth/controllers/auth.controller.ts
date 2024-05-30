@@ -4,7 +4,9 @@ import { LocalGuard } from '../guards/local.guard';
 import { UserService } from 'src/user/services/user.service';
 import { JwtPayload } from 'src/auth/interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -12,6 +14,7 @@ export class AuthController {
     private jwtService: JwtService,
   ) {}
 
+  @ApiOperation({ summary: 'Sign in' })
   @UseGuards(LocalGuard)
   @Post('/login')
   async signIn(@Body() credentials: SignInDto) {

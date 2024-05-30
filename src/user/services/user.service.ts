@@ -18,44 +18,42 @@ export class UserService {
     private userRoleRepository: Repository<UserRole>,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
-    {
-      const queryRunner =
-        this.userRepository.manager.connection.createQueryRunner();
+    const queryRunner =
+      this.userRepository.manager.connection.createQueryRunner();
 
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-      try {
-        const user = this.userRepository.create({
-          firstName: createUserDto.firstName,
-          lastName: createUserDto.lastName,
-          email: createUserDto.email,
-        });
-        const savedUserDetails = await queryRunner.manager.save(user);
+    try {
+      const user = this.userRepository.create({
+        firstName: createUserDto.firstName,
+        lastName: createUserDto.lastName,
+        email: createUserDto.email,
+      });
+      const savedUserDetails = await queryRunner.manager.save(user);
 
-        const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-        const userAuth = this.userAuthRepository.create({
-          password: hashedPassword,
-          user: savedUserDetails,
-        });
-        await queryRunner.manager.save(userAuth);
+      const userAuth = this.userAuthRepository.create({
+        password: hashedPassword,
+        user: savedUserDetails,
+      });
+      await queryRunner.manager.save(userAuth);
 
-        const userRole = this.userRoleRepository.create({
-          user: savedUserDetails,
-          role: UserRoles.REGULAR_USER,
-        });
-        await queryRunner.manager.save(userRole);
+      const userRole = this.userRoleRepository.create({
+        user: savedUserDetails,
+        role: UserRoles.REGULAR_USER,
+      });
+      await queryRunner.manager.save(userRole);
 
-        await queryRunner.commitTransaction();
+      await queryRunner.commitTransaction();
 
-        return;
-      } catch (err) {
-        await queryRunner.rollbackTransaction();
-        throw err;
-      } finally {
-        await queryRunner.release();
-      }
+      return;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new Error('Something went wrong');
+    } finally {
+      await queryRunner.release();
     }
   }
 
