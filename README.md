@@ -1,18 +1,39 @@
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+La api toma informacion (de peliculas unicamente) de https://swapi.dev/ y las utiliza para popular su base de datos.
+Lo hace de dos maneras:
 
-## Installation
+- Al iniciarse la aplicacion, usando el hook onModuleInit
+- Con una tarea programada que se ejecuta una vez por semana (configurable desde el env)
+
+Lo plantee como opcion, otra forma interesante podria ser exponer un endpoint y activar la sincronizacion desde fuera de la app.
+
+Aqui hay un diagrama a grandes razgos de la aplicacion:
+![Diagram](./docs/diagrams/sw-diagram.drawio.svg)
+
+## Requisitos
+
+- node 18
+- postgres 13 (hay un docker-compose en el proyecto que se puede usar)
+- variables de entorno (dejo un .env.example con los valores)
+
+## Instalación
+
+instalar dependencias
 
 ```bash
 $ yarn install
 ```
 
-- crear base de datos, hay un docker compose
-- correr migraciones
-- correr app
+generar tablas
 
-## Running the app
+```bash
+$ yarn run migrations:run
+```
+
+deje una migracion que inserta algunos valores para usar, se pueden loguear con admin@admin.com y regular@regular.com, contraseña: "root" para ambos
+
+## Correr App
 
 ```bash
 # development
@@ -25,15 +46,18 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
+## Propuesta de prueba
 
-```bash
-# unit tests
-$ yarn run test
+Con la aplicacion corriendo, debe loguearse con alguno de los usuarios ("admin@admin.com", "regular@regular.com", contraseña: "root") enviando una solicitud post al endpoint:
 
-# e2e tests
-$ yarn run test:e2e
+- /api/auth/login
 
-# test coverage
-$ yarn run test:cov
-```
+para luego hacer solicitudes a la api configurando el token jwt en las proximas consultas.
+
+Los endpoints disponibles son:
+
+GET: /api/movie -> retorna todas las peliculas
+GET: /api/movie/:id -> retorna la pelicula por id (uuid)
+POST: /api/movie -> crea una pelicula
+PUT: /api/movie -> editar pelicula
+DELETE: /api/movie/:id -> elimina la pelicula por id
