@@ -12,6 +12,9 @@ import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { UserService } from '../services/user.service';
 import { UserRoleDto } from '../dto/user-role.dto';
 import { Auth } from 'src/auth/guards/auth.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
+import { UserRoles } from '../entities/user-role.entity';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 // TODO: Handle queries by id, must be uuid
 
@@ -24,7 +27,8 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @UseGuards(Auth)
+  @Roles(UserRoles.ADMIN)
+  @UseGuards(Auth, RolesGuard)
   @Get()
   findAll() {
     return this.userService.findAll();
