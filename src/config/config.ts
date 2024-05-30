@@ -6,7 +6,7 @@ export default registerAs('config', () => {
     stage: process.env.STAGE,
     baseUrl: process.env.BASE_URL,
     jwtSecret: process.env.JWT_SECRET,
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+    syncMoviesFrequency: process.env.SYNC_MOVIES_FREQUENCY,
     postgres: {
       name: process.env.POSTGRES_DB,
       port: parseInt(process.env.POSTGRES_PORT, 10),

@@ -12,6 +12,13 @@ import { ConfigType } from '@nestjs/config';
 import config from 'src/config/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Cron } from '@nestjs/schedule';
+import * as dotenv from 'dotenv';
+
+const getCronInterval = () => {
+  dotenv.config();
+  return process.env.SYNC_FILMS_FREQUENCY || '* * * * 0';
+};
 
 const SWAPI_URL = 'https://swapi.dev/api/films/';
 
@@ -28,7 +35,10 @@ export class SwapiService implements OnModuleInit {
     this.syncFilms();
   }
 
+  @Cron(getCronInterval())
   private async getMovies(): Promise<SwapiMovie[]> {
+    console.log('asd');
+
     try {
       const { data } = await this.httpService.axiosRef.get<{
         results: SwapiMovie[];
