@@ -19,19 +19,21 @@ Aqui hay un diagrama a grandes razgos de la aplicacion:
 
 ## Instalación
 
-instalar dependencias
+**1-** instalar dependencias
 
 ```bash
 $ yarn install
 ```
 
-generar tablas
+**2-** Generar el env (si usa la imagen de docker puede dejar los mismos valores que el .env.example)
+
+**3-** generar tablas
 
 ```bash
 $ yarn run migrations:run
 ```
 
-deje una migracion que inserta algunos valores para usar, se pueden loguear con admin@admin.com y regular@regular.com, contraseña: "root" para ambos
+dejé una migracion que inserta algunos valores para usar, se pueden loguear con admin@admin.com y regular@regular.com, contraseña: "root" para ambos
 
 ## Correr App
 
