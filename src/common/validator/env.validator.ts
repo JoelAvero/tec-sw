@@ -2,14 +2,14 @@ import { plainToInstance } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, validateSync } from 'class-validator';
 
 enum Environment {
-  Local = 'local',
-  Development = 'dev',
-  Production = 'prod',
+  local = 'local',
+  dev = 'dev',
+  prod = 'prod',
 }
 
 class EnvironmentVariables {
   @IsEnum(Environment)
-  STAGE: Environment;
+  NODE_ENV: Environment;
 
   @IsNumber()
   @IsNotEmpty()

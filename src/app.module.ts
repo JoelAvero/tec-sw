@@ -12,7 +12,7 @@ import { SwapiModule } from './integrations/swapi/swapi.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: environments[process.env.STAGE] || '.env',
+      envFilePath: environments[process.env.NODE_ENV] || '.env',
       validate,
       load: [config],
       isGlobal: true,
