@@ -9,5 +9,6 @@ import { ScheduleModule } from '@nestjs/schedule';
   imports: [TypeOrmModule.forFeature([Movie]), ScheduleModule.forRoot()],
   controllers: [MovieController],
   providers: [MovieService],
+  exports: [MovieService],
 })
 export class MovieModule {}

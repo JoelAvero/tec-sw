@@ -14,6 +14,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
+import { MovieService } from 'src/movie/services/movie.service';
+import { CreateMovieDto } from 'src/movie/dto/create-movie.dto';
 
 const SWAPI_URL = 'https://swapi.dev/api/films/';
 
@@ -22,8 +24,9 @@ export class SwapiService implements OnModuleInit {
   constructor(
     private httpService: HttpService,
     @Inject(config.KEY) private configService: ConfigType<typeof config>,
-    @InjectRepository(Movie)
-    private movieRepository: Repository<Movie>,
+    // @InjectRepository(Movie)
+    // private movieRepository: Repository<Movie>,
+    private movieService: MovieService,
     private schedulerRegistry: SchedulerRegistry,
   ) {}
 
@@ -58,7 +61,7 @@ export class SwapiService implements OnModuleInit {
     }
   }
 
-  private normalizeFilms(films: SwapiMovie[]): Partial<Movie>[] {
+  private normalizeFilms(films: SwapiMovie[]): CreateMovieDto[] {
     return films.map((film) => {
       const id = uuidv4();
       return {
@@ -79,11 +82,9 @@ export class SwapiService implements OnModuleInit {
     const normalizedFilms = this.normalizeFilms(films);
 
     for (const film of normalizedFilms) {
-      const exists = await this.movieRepository.findOne({
-        where: { title: film.title },
-      });
+      const exists = await this.movieService.findOneByTitle(film.title);
       if (!exists) {
-        await this.movieRepository.save(film);
+        await this.movieService.create(film);
       }
     }
 

@@ -50,6 +50,10 @@ export class MovieService {
     return movie;
   }
 
+  async findOneByTitle(title: string): Promise<Movie> {
+    return this.movieRepository.findOne({ where: { title } });
+  }
+
   async update(id: string, updateMovieDto: UpdateMovieDto): Promise<Movie> {
     const movie = await this.findOne(id);
 

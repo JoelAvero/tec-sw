@@ -5,8 +5,8 @@ import { SwapiService } from '../services/swapi.service';
 export class SwapiController {
   constructor(private swapiService: SwapiService) {}
 
-  @Get()
-  getFilms() {
-    return this.swapiService.syncFilms();
-  }
+  // @Get()
+  // getFilms() {
+  //   return this.swapiService.syncFilms();
+  // }
 }

@@ -21,11 +21,11 @@ export class seeds1717100223682 implements MigrationInterface {
         -- Passwords
         INSERT INTO public.user_auth
         ("password", "userId")
-        VALUES('root', admin_user_id);
+        VALUES('$2b$10$OQvZxDTip61K3o0/rUT6fuG7nONGTpEioey8hPLsoq3MR21iTiH5e', admin_user_id);
 
         INSERT INTO public.user_auth
         ("password", "userId")
-        VALUES('root', regular_user_id);
+        VALUES('$2b$10$OQvZxDTip61K3o0/rUT6fuG7nONGTpEioey8hPLsoq3MR21iTiH5e', regular_user_id);
 
         -- Roles
         INSERT INTO public.user_role

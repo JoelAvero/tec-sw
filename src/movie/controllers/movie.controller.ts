@@ -17,7 +17,7 @@ import { Roles } from 'src/auth/decorators/role.decorator';
 import { UserRoles } from 'src/user/entities/user-role.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('User')
+@ApiTags('Movie')
 @UseGuards(Auth, RolesGuard)
 @Controller('movie')
 export class MovieController {
